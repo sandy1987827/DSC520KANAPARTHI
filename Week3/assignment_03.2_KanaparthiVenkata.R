@@ -7,6 +7,8 @@ library(ggplot2)
 library(readr)
 library(pastecs)
 theme_set(theme_minimal())
+setwd('E:/MSDS-SEM2/DSC520/CodingAssignments/DSC520KANAPARTHI')
+getwd()
 
 amercs_df <- read_delim(file="data/acs-14-1yr-s0201.csv", delim=',')
 
@@ -17,6 +19,8 @@ str(amercs_df)
 
 m<-mean(amercs_df$HSDegree)
 std<-sqrt(var(amercs_df$HSDegree))
+
+ggplot(amercs_df, aes(HSDegree)) + geom_histogram(bins = 10, aes(y = ..density..)) + ggtitle('High School Degree') + xlab('Degree Percentage') + ylab('Number of Persons')
 
 ggplot(amercs_df, aes(HSDegree)) + geom_histogram(bins = 10, aes(y = ..density..)) + ggtitle('High School Degree') + xlab('Degree Percentage') + ylab('Number of Persons') + stat_function(fun = dnorm, args = list(mean = m, sd = std))
 
