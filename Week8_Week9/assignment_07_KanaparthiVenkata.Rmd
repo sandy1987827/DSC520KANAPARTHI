@@ -1,0 +1,126 @@
+---
+title: "assignment_07_KanaparthiVenkata"
+author: "Venkata Kanaparthi"
+date: "5/14/2021"
+output: pdf_document
+---
+
+```{r include=TRUE}
+library(ggm)
+library(ggplot2)
+```
+
+Set the working directory to the root of your DSC 520 directory
+
+```{r include=TRUE}
+setwd('E:/MSDS-SEM2/DSC520/CodingAssignments/DSC520KANAPARTHI')
+## Load the `data/r4ds/heights.csv` to
+heights_df <- read.csv("data/r4ds/heights.csv", stringsAsFactors = FALSE)
+```
+
+## Fit a linear model
+```{r include=TRUE}
+earn_lm <-  lm( earn ~ height + sex + ed + age + race, data=heights_df)
+earn_lm
+
+```
+
+## View the summary of your model
+```{r include=TRUE}
+summary(earn_lm)
+```
+
+
+```{r include=TRUE}
+earn_test_df <- as.double(c(200,20000,50000,100000,200000))
+ed_test_df <- as.integer(c(3,7,10,14,18))
+height_test_df <-  as.double(c(57.50,62.75,72.11,74.77,77.05))
+age_test_df <-  as.integer(c(18,36,54,72,80))
+sex_test_df <-c("male","female","female","male","male")
+race_test_df <- c("white","other","hispanic","black","other")
+test_df <- data.frame(earn_test_df,ed_test_df,height_test_df,age_test_df,sex_test_df,race_test_df, stringsAsFactors = FALSE)
+names(test_df) <- c("earn","ed","height","age","sex","race")
+head (test_df)
+predicted_df <- data.frame(earn = predict(earn_lm, test_df), ed=test_df$ed, race=test_df$race, height=test_df$height, age=test_df$age, sex=test_df$sex)
+```
+
+## Compute deviation (i.e. residuals)
+```{r include=TRUE}
+mean_earn <- mean(heights_df$earn)
+mean_earn
+```
+## Corrected Sum of Squares Total
+```{r include=TRUE}
+sst <- sum((mean_earn - heights_df$earn)^2)
+sst
+```
+## Corrected Sum of Squares for Model
+```{r include=TRUE}
+ssm <- sum((mean_earn - predicted_df$earn)^2)
+ssm
+```
+## Residuals
+```{r include=TRUE}
+residuals <- heights_df$earn - predicted_df$earn
+residuals
+```
+## Sum of Squares for Error
+```{r include=TRUE}
+sse <- sum(residuals^2)
+sse
+```
+## R Squared
+```{r include=TRUE}
+r_squared <- ssm/sst
+r_squared
+```
+## Number of observations
+```{r include=TRUE}
+n <- nrow(heights_df)
+n
+```
+## Number of regression paramaters
+```{r include=TRUE}
+p <- 8
+p
+```
+## Corrected Degrees of Freedom for Model
+```{r include=TRUE}
+dfm <- p-1
+dfm
+```
+## Degrees of Freedom for Error
+```{r include=TRUE}
+dfe <- n-p
+dfe
+```
+## Corrected Degrees of Freedom Total:   DFT = n - 1
+```{r include=TRUE}
+dft <- n-1
+dft
+```
+## Mean of Squares for Model:   MSM = SSM / DFM
+```{r include=TRUE}
+msm <- ssm/dfm
+msm
+```
+## Mean of Squares for Error:   MSE = SSE / DFE
+```{r include=TRUE}
+mse <- sse/dfe
+mse
+```
+## Mean of Squares Total:   MST = SST / DFT
+```{r include=TRUE}
+mst <- sst/dft
+mst
+```
+## F Statistic
+```{r include=TRUE}
+f_score <- msm/mse
+f_score
+```
+## Adjusted R Squared R2 = 1 - (1 - R2)(n - 1) / (n - p)
+```{r include=TRUE}
+adjusted_r_squared <- 1-((1 - r_squared)*(n - 1) / (n - p))
+adjusted_r_squared
+```

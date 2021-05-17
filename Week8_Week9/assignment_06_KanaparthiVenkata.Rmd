@@ -1,0 +1,128 @@
+---
+title: "assignment_06_KanaparthiVenkata"
+author: "Venkata Kanaparthi"
+date: "5/13/2021"
+output: pdf_document
+---
+
+```{r include=TRUE}
+library(ggm)
+library(ggplot2)
+```
+
+Set the working directory to the root of your DSC 520 directory
+
+```{r include=TRUE}
+setwd('E:/MSDS-SEM2/DSC520/CodingAssignments/DSC520KANAPARTHI')
+## Load the `data/r4ds/heights.csv` to
+heights_df <- read.csv("data/r4ds/heights.csv")
+```
+
+Fit a linear model using the `age` variable as the predictor and `earn` as the outcome
+
+```{r include=TRUE}
+age_lm <- lm(earn ~ age, data = heights_df , na.action = na.exclude)
+age_lm
+```
+
+View the summary of your model using `summary()`
+```{r include=TRUE}
+summary(age_lm)
+```
+
+Creating predictions using `predict()`
+
+```{r include=TRUE}
+age_testing_df <- data.frame(age = c(18,36,54,72,80))
+age_predict_df <- data.frame(earn = predict(age_lm, newdata = age_testing_df), age=age_testing_df)
+```
+
+## Plot the predictions against the original data
+```{r include=TRUE}
+ggplot(data = heights_df, aes(y = earn, x = age)) + geom_point(color='blue') +  geom_line(color='red',data = age_predict_df, aes(y=earn, x=age))
+```
+## Mean on earn
+```{r include=TRUE}
+mean_earn <- mean(heights_df$earn)
+mean_earn
+```
+## Corrected Sum of Squares Total
+```{r include=TRUE}
+sst <- sum((mean_earn - heights_df$earn)^2)
+sst
+```
+## Corrected Sum of Squares for Model
+```{r include=TRUE}
+ssm <- sum((mean_earn - age_predict_df$earn)^2)
+ssm
+```
+## Residuals
+```{r include=TRUE}
+residuals <- heights_df$earn - age_predict_df$earn
+#residuals
+```
+## Sum of Squares for Error
+```{r include=TRUE}
+sse <- sum(residuals^2)
+sse
+```
+## R Squared 
+```{r include=TRUE}
+r_squared <- ssm/sst
+r_squared
+```
+## Number of observations
+```{r include=TRUE}
+n <- 5
+n
+```
+## Number of regression parameters
+```{r include=TRUE}
+p <- 2
+p
+```
+## Corrected Degrees of Freedom for Model (p-1)
+```{r include=TRUE}
+dfm <- p-1
+dfm
+```
+## Degrees of Freedom for Error (n-p)
+```{r include=TRUE}
+dfe <- n-p
+dfe
+```
+## Corrected Degrees of Freedom Total:   DFT = n - 1
+```{r include=TRUE}
+dft <- n-1
+dft
+```
+## Mean of Squares for Model:   MSM = SSM / DFM
+```{r include=TRUE}
+msm <- ssm/dfm
+msm
+```
+## Mean of Squares for Error:   MSE = SSE / DFE
+```{r include=TRUE}
+mse <- sse/dfe
+mse
+```
+## Mean of Squares Total:   MST = SST / DFT
+```{r include=TRUE}
+mst <- sst/dft
+mst
+```
+## F Statistic F = MSM/MSE
+```{r include=TRUE}
+f_score <- msm/mse
+f_score
+```
+## Adjusted R Squared R2 = 1 - (1 - R2)(n - 1) / (n - p)
+```{r include=TRUE}
+adjusted_r_squared <- 1-((1 - r_squared)*(n - 1) / (n - p))
+adjusted_r_squared
+```
+## Calculate the p-value from the F distribution
+```{r include=TRUE}
+p_value <- pf(f_score, dfm, dft, lower.tail=F)
+p_value
+```
