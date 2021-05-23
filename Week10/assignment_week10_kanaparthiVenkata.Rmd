@@ -1,0 +1,83 @@
+---
+title: "assignment_week10_kanaparthiVenkata"
+author: "Venkata Kanaparthi"
+date: "5/22/2021"
+output: pdf_document
+---
+
+```{r include=TRUE, echo=FALSE}
+library(ggm)
+library(ggplot2)
+library(readr)
+library(pastecs)
+library(readxl)
+library(plyr)
+library(dplyr)
+library(magrittr)
+library(purrr)
+library(stringr)
+library(QuantPsyc)
+library(caTools)
+library(survival)
+```
+
+## Fit a Logistic Regression Model to Thoracic Surgery Binary Dataset
+
+a. For this problem, you will be working with the thoracic surgery data set from the University of California Irvine machine learning repository. This dataset contains information on life expectancy in lung cancer patients after surgery. The underlying thoracic surgery data is in ARFF format. This is a text-based format with information on each of the attributes. You can load this data using a package such as foreign or by cutting and pasting the data section into a CSV file.
+
+Set the working directory to the root of your DSC 520 directory
+
+```{r include=TRUE, , echo=FALSE}
+setwd('E:/MSDS-SEM2/DSC520/CodingAssignments/DSC520KANAPARTHI')
+thoracicData_df <- read.csv("data/Thoracic_Surgery_Data.csv", stringsAsFactors = FALSE)
+#thoracicData_df
+```
+
+Assignment Instructions:
+1.) Fit a binary logistic regression model to the data set that predicts whether or not the patient survived for one year (the Risk1Y variable) after the surgery. Use the glm() function to perform the logistic regression. See Generalized Linear Models for an example. Include a summary using the summary() function in your results.
+
+```{r include=TRUE, , echo=FALSE}
+thoracicData_df$DGN <- as.factor(thoracicData_df$DGN)
+thoracicData_df$PRE14 <- as.factor(thoracicData_df$PRE14)
+thoracicModel <- glm(Risk1Yr ~ DGN + PRE4 + PRE5 + PRE6 + PRE7 + PRE8 + PRE9 + PRE10 + PRE11 + PRE14 + PRE17 + PRE19 + PRE25 + PRE30 + PRE32 + AGE , data = thoracicData_df, family = binomial())
+summary(thoracicModel)
+```
+2.) According to the summary, which variables had the greatest effect on the survival rate?
+To compute the accuracy of your model, use the dataset to predict the outcome variable. The percent of correct predictions is the accuracy of your model. What is the accuracy of your model?
+
+Ans : PRE14 and PRE9 has the most significant impact.
+
+```{r include=TRUE, , echo=FALSE}
+res <- predict(thoracicModel, thoracicData_df, type = "response")
+
+# Confusion Matrix
+confMatrix <- table(Actual_value = thoracicData_df$Risk1Yr, Predicted_value= res>0.5)
+confMatrix
+
+# Accuracy of Model
+accuracy <- (confMatrix[[1,1]] + confMatrix[[2,2]]) / sum(confMatrix) * 100
+print(paste("Accuracy of the model : ",round(accuracy,digits = 2) , "%"))
+```
+## Fit a Logistic Regression Model
+1.) Fit a logistic regression model to the binary-classifier-data.csv dataset
+2.) The dataset (found in binary-classifier-data.csv) contains three variables; label, x, and y. The label variable is either 0 or 1 and is the output we want to predict using the x and y variables.
+  a.) What is the accuracy of the logistic regression classifier?
+  b.) Keep this assignment handy, as you will be comparing your results from this week to next week.
+  
+```{r include=TRUE, , echo=FALSE}
+setwd('E:/MSDS-SEM2/DSC520/CodingAssignments/DSC520KANAPARTHI')
+binaryClassifier_df <- read.csv("data/binary-classifier-data.csv", stringsAsFactors = FALSE)
+binaryClassifierModel <- glm(label ~ x + y, data = binaryClassifier_df, family = binomial())
+summary(binaryClassifierModel)
+```
+```{r include=TRUE, , echo=FALSE}
+res <- predict(binaryClassifierModel, binaryClassifier_df, type = "response")
+
+# Confusion Matrix
+confMatrix <- table(Actual_value = binaryClassifier_df$label, Predicted_value= res>0.5)
+confMatrix
+
+# Accuracy of Model
+accuracy <- (confMatrix[[1,1]] + confMatrix[[2,2]]) / sum(confMatrix) * 100
+print(paste("Accuracy of the model : ",round(accuracy,digits = 2) , "%"))
+```
